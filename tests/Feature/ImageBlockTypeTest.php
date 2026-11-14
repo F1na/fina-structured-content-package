@@ -19,7 +19,7 @@ beforeEach(function () {
 it('creates an image block by uploading a file directly', function () {
     $file = UploadedFile::fake()->image('photo.jpg', 100, 100);
 
-    $response = $this->post("/api/posts/{$this->post->id}/blocks", [
+    $response = $this->post("/api/structuredContents/posts/{$this->post->id}/blocks", [
         'type' => 'image',
         'file' => $file,
         'alt' => 'A photo',
@@ -35,7 +35,7 @@ it('creates an image block by uploading a file directly', function () {
 });
 
 it('rejects an image block without a file', function () {
-    $this->postJson("/api/posts/{$this->post->id}/blocks", [
+    $this->postJson("/api/structuredContents/posts/{$this->post->id}/blocks", [
         'type' => 'image',
         'alt' => 'A photo',
     ])->assertStatus(422);
@@ -43,11 +43,11 @@ it('rejects an image block without a file', function () {
 
 it('keeps the existing file when updating without a new one', function () {
     $file = UploadedFile::fake()->image('photo.jpg');
-    $this->post("/api/posts/{$this->post->id}/blocks", ['type' => 'image', 'file' => $file]);
+    $this->post("/api/structuredContents/posts/{$this->post->id}/blocks", ['type' => 'image', 'file' => $file]);
     $block = Block::first();
     $originalPath = $block->data['path'];
 
-    $response = $this->put("/api/blocks/{$block->id}", ['alt' => 'Updated alt']);
+    $response = $this->put("/api/structuredContents/blocks/{$block->id}", ['alt' => 'Updated alt']);
 
     $response->assertOk();
     $response->assertJsonPath('alt', 'Updated alt');
@@ -57,12 +57,12 @@ it('keeps the existing file when updating without a new one', function () {
 
 it('replaces the file on update and deletes the old one', function () {
     $original = UploadedFile::fake()->image('original.jpg');
-    $this->post("/api/posts/{$this->post->id}/blocks", ['type' => 'image', 'file' => $original]);
+    $this->post("/api/structuredContents/posts/{$this->post->id}/blocks", ['type' => 'image', 'file' => $original]);
     $block = Block::first();
     $originalPath = $block->data['path'];
 
     $replacement = UploadedFile::fake()->image('replacement.jpg');
-    $response = $this->put("/api/blocks/{$block->id}", ['file' => $replacement]);
+    $response = $this->put("/api/structuredContents/blocks/{$block->id}", ['file' => $replacement]);
 
     $response->assertOk();
     $newPath = $block->fresh()->data['path'];
@@ -73,11 +73,11 @@ it('replaces the file on update and deletes the old one', function () {
 
 it('deletes the underlying file when the block is destroyed', function () {
     $file = UploadedFile::fake()->image('photo.jpg');
-    $this->post("/api/posts/{$this->post->id}/blocks", ['type' => 'image', 'file' => $file]);
+    $this->post("/api/structuredContents/posts/{$this->post->id}/blocks", ['type' => 'image', 'file' => $file]);
     $block = Block::first();
     $path = $block->data['path'];
 
-    $this->delete("/api/blocks/{$block->id}")->assertNoContent();
+    $this->delete("/api/structuredContents/blocks/{$block->id}")->assertNoContent();
 
     Storage::disk('public')->assertMissing($path);
 });

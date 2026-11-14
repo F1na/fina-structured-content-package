@@ -23,6 +23,9 @@ use Illuminate\Support\Facades\Route;
  *         StructuredContent::routes();
  *     });
  *
+ * All routes are additionally prefixed with `structuredContents/`
+ * (e.g. /admin/structuredContents/posts/1/blocks).
+ *
  * Set config('blocks.register_routes') to false to stop the package from
  * also auto-registering its own default (unguarded) route group, so the
  * routes aren't registered twice.
@@ -31,7 +34,7 @@ class StructuredContent
 {
     public static function routes(): void
     {
-        Route::middleware(SubstituteBindings::class)->group(function () {
+        Route::prefix('structuredContents')->middleware(SubstituteBindings::class)->group(function () {
             Route::get('/{blockableType}/{blockableId}/blocks', [BlockController::class, 'index']);
             Route::post('/{blockableType}/{blockableId}/blocks', [BlockController::class, 'store']);
 

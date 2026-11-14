@@ -19,7 +19,7 @@ it('can be mounted under a custom prefix, independently of the default route gro
         StructuredContent::routes();
     });
 
-    $response = $this->postJson("/custom-segment/posts/{$this->post->id}/blocks", [
+    $response = $this->postJson("/custom-segment/structuredContents/posts/{$this->post->id}/blocks", [
         'type' => 'text',
         'content' => 'Hello',
     ]);
@@ -33,13 +33,13 @@ it('can be mounted more than once, once per segment', function () {
     Route::prefix('admin')->group(fn () => StructuredContent::routes());
     Route::prefix('healthFacility')->group(fn () => StructuredContent::routes());
 
-    $this->getJson("/admin/posts/{$this->post->id}/blocks")->assertOk();
-    $this->getJson("/healthFacility/posts/{$this->post->id}/blocks")->assertOk();
+    $this->getJson("/admin/structuredContents/posts/{$this->post->id}/blocks")->assertOk();
+    $this->getJson("/healthFacility/structuredContents/posts/{$this->post->id}/blocks")->assertOk();
 });
 
 it('still registers the default route group unless disabled', function () {
     // The package's own BlocksServiceProvider auto-registers routes under
     // config('blocks.route_prefix') ("api" by default) — still reachable
     // alongside any custom groups mounted manually above.
-    $this->getJson("/api/posts/{$this->post->id}/blocks")->assertOk();
+    $this->getJson("/api/structuredContents/posts/{$this->post->id}/blocks")->assertOk();
 });

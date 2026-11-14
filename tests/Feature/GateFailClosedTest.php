@@ -13,6 +13,6 @@ it('returns 403 on every route when the gate is not overridden', function () {
     app(Fina\StructuredContent\BlocksRegistrar::class)->registerBlockable('posts', Post::class);
     $post = Post::create(['title' => 'Hello']);
 
-    $this->getJson("/api/posts/{$post->id}/blocks")->assertForbidden();
-    $this->postJson("/api/posts/{$post->id}/blocks", ['type' => 'text', 'content' => 'x'])->assertForbidden();
+    $this->getJson("/api/structuredContents/posts/{$post->id}/blocks")->assertForbidden();
+    $this->postJson("/api/structuredContents/posts/{$post->id}/blocks", ['type' => 'text', 'content' => 'x'])->assertForbidden();
 });

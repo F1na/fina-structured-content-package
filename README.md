@@ -42,7 +42,7 @@ Crée la table `block` (`blockableId`/`blockableType` polymorphiques, `type`, `d
 - noms de colonne en camelCase (`blockableId`, `blockableType`, `createdAt`, `updatedAt`),
 - le `_` est réservé aux tables d'association (pivots) — le package n'en a aucune, la relation polymorphique tenant sur deux colonnes de la table `block` elle-même.
 
-Ces conventions ne concernent que le schéma (tables/colonnes) : les routes HTTP (`/{blockableType}/{blockableId}/blocks`) et les clés de configuration (`route_prefix`) restent en anglais/snake_case ou pluriel là où c'est l'usage REST habituel, sans lien avec le nommage BDD.
+Ces conventions ne concernent que le schéma (tables/colonnes) : les routes HTTP (`/structuredContents/{blockableType}/{blockableId}/blocks`) et les clés de configuration (`route_prefix`) restent en anglais/snake_case ou pluriel là où c'est l'usage REST habituel, sans lien avec le nommage BDD.
 
 ## Routes exposées
 
@@ -50,12 +50,12 @@ Toutes préfixées par `config('blocks.route_prefix')` :
 
 | Méthode | URI                                             | Action     |
 |---------|--------------------------------------------------|------------|
-| GET     | `/{blockableType}/{blockableId}/blocks`           | `index`    |
-| POST    | `/{blockableType}/{blockableId}/blocks`           | `store`    |
-| POST    | `/blocks/{block}/up`                              | `up`       |
-| POST    | `/blocks/{block}/down`                            | `down`     |
-| PUT     | `/blocks/{block}`                                 | `update`   |
-| DELETE  | `/blocks/{block}`                                 | `destroy`  |
+| GET     | `/structuredContents/{blockableType}/{blockableId}/blocks`           | `index`    |
+| POST    | `/structuredContents/{blockableType}/{blockableId}/blocks`           | `store`    |
+| POST    | `/structuredContents/blocks/{block}/up`                              | `up`       |
+| POST    | `/structuredContents/blocks/{block}/down`                            | `down`     |
+| PUT     | `/structuredContents/blocks/{block}`                                 | `update`   |
+| DELETE  | `/structuredContents/blocks/{block}`                                 | `destroy`  |
 
 `{blockableType}` est une clé arbitraire (ex. `articles`), résolue via `BlocksRegistrar` — jamais un nom de classe.
 
@@ -103,7 +103,7 @@ Contrairement à Strapi, ce package ne fournit **pas** de media library partagé
 
 ```bash
 # Création : le fichier est envoyé dans la même requête que le bloc (multipart/form-data)
-POST /api/articles/1/blocks
+POST /api/structuredContents/articles/1/blocks
 Content-Type: multipart/form-data
 type: image
 file: <binaire>
@@ -112,16 +112,16 @@ alt: Description de l'image
 # → { "id": 12, "type": "image", "position": 1, "url": "https://.../storage/blocks/images/xxxx.jpg", "alt": "Description de l'image" }
 
 # Mise à jour sans remplacer le fichier : omettre "file" conserve l'existant
-PUT /api/blocks/12
+PUT /api/structuredContents/blocks/12
 { "alt": "Nouvelle description" }
 
 # Mise à jour en remplaçant le fichier : l'ancien est supprimé du disque
-PUT /api/blocks/12
+PUT /api/structuredContents/blocks/12
 Content-Type: multipart/form-data
 file: <nouveau binaire>
 ```
 
-Le fichier est supprimé du disque automatiquement quand le bloc est supprimé (`DELETE /api/blocks/12`), ou remplacé (ancien fichier effacé) si un nouveau fichier est envoyé lors d'un update.
+Le fichier est supprimé du disque automatiquement quand le bloc est supprimé (`DELETE /api/structuredContents/blocks/12`), ou remplacé (ancien fichier effacé) si un nouveau fichier est envoyé lors d'un update.
 
 Le disque de stockage (`config('blocks.media_disk')`, défaut `public`) et la taille max en Ko (`config('blocks.media_max_size')`, défaut `10240`) sont configurables via `BLOCKS_MEDIA_DISK`/`BLOCKS_MEDIA_MAX_SIZE`.
 
@@ -307,8 +307,8 @@ composer run serve   # démarre le serveur sur http://127.0.0.1:8000
 
 ```bash
 # Post#1 existe déjà après `composer run build` (seedé via workbench/database/seeders)
-curl http://127.0.0.1:8000/api/posts/1/blocks
-curl -X POST http://127.0.0.1:8000/api/posts/1/blocks \
+curl http://127.0.0.1:8000/api/structuredContents/posts/1/blocks
+curl -X POST http://127.0.0.1:8000/api/structuredContents/posts/1/blocks \
   -H "Content-Type: application/json" -H "Accept: application/json" \
   -d '{"type":"text","content":"Bonjour"}'
 ```

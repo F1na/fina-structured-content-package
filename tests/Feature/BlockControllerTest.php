@@ -20,7 +20,7 @@ it('lists blocks ordered by position', function () {
     Block::create(['blockableId' => $this->post->id, 'blockableType' => Post::class, 'type' => 'text', 'data' => ['content' => 'second'], 'position' => 1]);
     Block::create(['blockableId' => $this->post->id, 'blockableType' => Post::class, 'type' => 'text', 'data' => ['content' => 'first'], 'position' => 0]);
 
-    $response = $this->getJson("/api/posts/{$this->post->id}/blocks");
+    $response = $this->getJson("/api/structuredContents/posts/{$this->post->id}/blocks");
 
     $response->assertOk();
     $response->assertJsonPath('0.content', 'first');
@@ -32,7 +32,7 @@ it('returns 404 when the blockable type is not whitelisted', function () {
 });
 
 it('creates a block via store with position = max + 1', function () {
-    $response = $this->postJson("/api/posts/{$this->post->id}/blocks", [
+    $response = $this->postJson("/api/structuredContents/posts/{$this->post->id}/blocks", [
         'type' => 'text',
         'content' => 'Hello',
     ]);
@@ -45,19 +45,19 @@ it('creates a block via store with position = max + 1', function () {
 });
 
 it('returns 422 on validation failure', function () {
-    $this->postJson("/api/posts/{$this->post->id}/blocks", ['type' => 'text'])
+    $this->postJson("/api/structuredContents/posts/{$this->post->id}/blocks", ['type' => 'text'])
         ->assertStatus(422);
 });
 
 it('returns 422 for an unknown block type', function () {
-    $this->postJson("/api/posts/{$this->post->id}/blocks", ['type' => 'does-not-exist'])
+    $this->postJson("/api/structuredContents/posts/{$this->post->id}/blocks", ['type' => 'does-not-exist'])
         ->assertStatus(422);
 });
 
 it('updates a block via update', function () {
     $block = Block::create(['blockableId' => $this->post->id, 'blockableType' => Post::class, 'type' => 'text', 'data' => ['content' => 'old'], 'position' => 0]);
 
-    $response = $this->putJson("/api/blocks/{$block->id}", ['content' => 'new']);
+    $response = $this->putJson("/api/structuredContents/blocks/{$block->id}", ['content' => 'new']);
 
     $response->assertOk();
     $response->assertJsonPath('content', 'new');
@@ -67,7 +67,7 @@ it('updates a block via update', function () {
 it('deletes a block via destroy', function () {
     $block = Block::create(['blockableId' => $this->post->id, 'blockableType' => Post::class, 'type' => 'text', 'data' => ['content' => 'x'], 'position' => 0]);
 
-    $this->deleteJson("/api/blocks/{$block->id}")->assertNoContent();
+    $this->deleteJson("/api/structuredContents/blocks/{$block->id}")->assertNoContent();
 
     expect(Block::find($block->id))->toBeNull();
 });
@@ -76,7 +76,7 @@ it('moves a block up by swapping with its previous neighbor', function () {
     $first = Block::create(['blockableId' => $this->post->id, 'blockableType' => Post::class, 'type' => 'text', 'data' => ['content' => 'a'], 'position' => 0]);
     $second = Block::create(['blockableId' => $this->post->id, 'blockableType' => Post::class, 'type' => 'text', 'data' => ['content' => 'b'], 'position' => 1]);
 
-    $this->postJson("/api/blocks/{$second->id}/up")->assertOk();
+    $this->postJson("/api/structuredContents/blocks/{$second->id}/up")->assertOk();
 
     expect($second->fresh()->position)->toBe(0);
     expect($first->fresh()->position)->toBe(1);
@@ -86,7 +86,7 @@ it('moves a block down by swapping with its next neighbor', function () {
     $first = Block::create(['blockableId' => $this->post->id, 'blockableType' => Post::class, 'type' => 'text', 'data' => ['content' => 'a'], 'position' => 0]);
     $second = Block::create(['blockableId' => $this->post->id, 'blockableType' => Post::class, 'type' => 'text', 'data' => ['content' => 'b'], 'position' => 1]);
 
-    $this->postJson("/api/blocks/{$first->id}/down")->assertOk();
+    $this->postJson("/api/structuredContents/blocks/{$first->id}/down")->assertOk();
 
     expect($first->fresh()->position)->toBe(1);
     expect($second->fresh()->position)->toBe(0);
@@ -96,8 +96,8 @@ it('does nothing when moving the first block up or the last block down', functio
     $first = Block::create(['blockableId' => $this->post->id, 'blockableType' => Post::class, 'type' => 'text', 'data' => ['content' => 'a'], 'position' => 0]);
     $second = Block::create(['blockableId' => $this->post->id, 'blockableType' => Post::class, 'type' => 'text', 'data' => ['content' => 'b'], 'position' => 1]);
 
-    $this->postJson("/api/blocks/{$first->id}/up")->assertOk();
-    $this->postJson("/api/blocks/{$second->id}/down")->assertOk();
+    $this->postJson("/api/structuredContents/blocks/{$first->id}/up")->assertOk();
+    $this->postJson("/api/structuredContents/blocks/{$second->id}/down")->assertOk();
 
     expect($first->fresh()->position)->toBe(0);
     expect($second->fresh()->position)->toBe(1);

@@ -12,7 +12,7 @@ beforeEach(function () {
 });
 
 it('creates a heading block with an explicit level', function () {
-    $response = $this->postJson("/api/posts/{$this->post->id}/blocks", [
+    $response = $this->postJson("/api/structuredContents/posts/{$this->post->id}/blocks", [
         'type' => 'heading',
         'text' => 'Section title',
         'level' => 1,
@@ -25,7 +25,7 @@ it('creates a heading block with an explicit level', function () {
 });
 
 it('defaults the heading level to 2 when omitted', function () {
-    $response = $this->postJson("/api/posts/{$this->post->id}/blocks", [
+    $response = $this->postJson("/api/structuredContents/posts/{$this->post->id}/blocks", [
         'type' => 'heading',
         'text' => 'Section title',
     ]);
@@ -35,14 +35,14 @@ it('defaults the heading level to 2 when omitted', function () {
 });
 
 it('rejects a heading without content', function () {
-    $this->postJson("/api/posts/{$this->post->id}/blocks", [
+    $this->postJson("/api/structuredContents/posts/{$this->post->id}/blocks", [
         'type' => 'heading',
         'level' => 3,
     ])->assertStatus(422);
 });
 
 it('rejects a heading level out of the 1-6 range', function () {
-    $this->postJson("/api/posts/{$this->post->id}/blocks", [
+    $this->postJson("/api/structuredContents/posts/{$this->post->id}/blocks", [
         'type' => 'heading',
         'text' => 'Section title',
         'level' => 7,
