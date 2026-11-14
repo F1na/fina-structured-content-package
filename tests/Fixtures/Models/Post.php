@@ -2,6 +2,7 @@
 
 namespace Tests\Fixtures\Models;
 
+use Fina\StructuredContent\Concerns\HasBlocks;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -10,6 +11,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Post extends Model
 {
+    use HasBlocks;
+
     const CREATED_AT = 'createdAt';
 
     const UPDATED_AT = 'updatedAt';

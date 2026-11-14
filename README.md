@@ -165,6 +165,28 @@ public function boot(BlocksRegistrar $blockables): void
 
 Le modèle blockable n'a besoin d'aucune interface particulière côté package.
 
+#### Relation `blocks` (optionnel)
+
+Pour lire les blocs directement depuis le modèle, sans passer par l'API, ajouter le trait `HasBlocks` :
+
+```php
+use Fina\StructuredContent\Concerns\HasBlocks;
+
+class Article extends Model
+{
+    use HasBlocks;
+}
+
+Article::with('blocks')->get();   // relation morphMany triée par position, eager-loadable
+$article->blocks;                 // Collection de Block (->data brut accessible)
+$article->blocks->toArray();      // sérialisé comme l'API (toArray() de chaque type de bloc)
+return $article->load('blocks');  // idem dans le JSON de la réponse
+```
+
+La sérialisation d'un `Block` (`toArray()`/JSON) reprend le format de l'API ; `createdAt`/`updatedAt` n'y figurent pas.
+
+Le trait supprime aussi les blocs du modèle (et appelle `afterDelete()` de chaque type, ex. suppression des fichiers) quand il est supprimé — définitivement, un soft delete les conserve. Il est compatible avec une morph map : `blockableType` est écrit via `getMorphClass()`.
+
 Pour lister les blockables enregistrés :
 
 ```bash

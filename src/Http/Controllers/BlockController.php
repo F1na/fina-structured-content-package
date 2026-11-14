@@ -35,7 +35,7 @@ class BlockController extends Controller
         }
 
         $blocks = Block::query()
-            ->where('blockableType', $blockable::class)
+            ->where('blockableType', $blockable->getMorphClass())
             ->where('blockableId', $blockable->getKey())
             ->orderBy('position')
             ->get();
@@ -68,13 +68,13 @@ class BlockController extends Controller
         $data = $type->prepareForStorage($data, $request, []);
 
         $position = (int) Block::query()
-            ->where('blockableType', $blockable::class)
+            ->where('blockableType', $blockable->getMorphClass())
             ->where('blockableId', $blockable->getKey())
             ->max('position');
 
         $block = Block::create([
             'blockableId' => $blockable->getKey(),
-            'blockableType' => $blockable::class,
+            'blockableType' => $blockable->getMorphClass(),
             'type' => $type::key(),
             'data' => $data,
             'position' => $position + 1,
@@ -195,15 +195,6 @@ class BlockController extends Controller
 
     private function serialize(Block $block): array
     {
-        $type = $this->blockTypes->resolve($block->type);
-
-        return array_merge(
-            [
-                'id' => $block->id,
-                'type' => $block->type,
-                'position' => $block->position,
-            ],
-            $type->toArray($block->data)
-        );
+        return $block->toStructuredArray();
     }
 }
