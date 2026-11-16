@@ -47,7 +47,7 @@ it('keeps the existing file when updating without a new one', function () {
     $block = Block::first();
     $originalPath = $block->data['path'];
 
-    $response = $this->put("/api/structuredContents/blocks/{$block->id}", ['alt' => 'Updated alt']);
+    $response = $this->post("/api/structuredContents/blocks/{$block->id}", ['alt' => 'Updated alt']);
 
     $response->assertOk();
     $response->assertJsonPath('alt', 'Updated alt');
@@ -62,7 +62,7 @@ it('replaces the file on update and deletes the old one', function () {
     $originalPath = $block->data['path'];
 
     $replacement = UploadedFile::fake()->image('replacement.jpg');
-    $response = $this->put("/api/structuredContents/blocks/{$block->id}", ['file' => $replacement]);
+    $response = $this->post("/api/structuredContents/blocks/{$block->id}", ['file' => $replacement]);
 
     $response->assertOk();
     $newPath = $block->fresh()->data['path'];

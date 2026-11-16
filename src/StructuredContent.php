@@ -40,7 +40,7 @@ class StructuredContent
 
             Route::post('/blocks/{block}/up', [BlockController::class, 'up']);
             Route::post('/blocks/{block}/down', [BlockController::class, 'down']);
-            Route::put('/blocks/{block}', [BlockController::class, 'update']);
+            Route::post('/blocks/{block}', [BlockController::class, 'update']);
             Route::delete('/blocks/{block}', [BlockController::class, 'destroy']);
         });
     }

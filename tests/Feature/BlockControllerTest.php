@@ -57,7 +57,7 @@ it('returns 422 for an unknown block type', function () {
 it('updates a block via update', function () {
     $block = Block::create(['blockableId' => $this->post->id, 'blockableType' => Post::class, 'type' => 'text', 'data' => ['content' => 'old'], 'position' => 0]);
 
-    $response = $this->putJson("/api/structuredContents/blocks/{$block->id}", ['content' => 'new']);
+    $response = $this->postJson("/api/structuredContents/blocks/{$block->id}", ['content' => 'new']);
 
     $response->assertOk();
     $response->assertJsonPath('content', 'new');

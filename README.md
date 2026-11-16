@@ -54,7 +54,7 @@ Toutes préfixées par `config('blocks.route_prefix')` :
 | POST    | `/structuredContents/{blockableType}/{blockableId}/blocks`           | `store`    |
 | POST    | `/structuredContents/blocks/{block}/up`                              | `up`       |
 | POST    | `/structuredContents/blocks/{block}/down`                            | `down`     |
-| PUT     | `/structuredContents/blocks/{block}`                                 | `update`   |
+| POST    | `/structuredContents/blocks/{block}`                                 | `update`   |
 | DELETE  | `/structuredContents/blocks/{block}`                                 | `destroy`  |
 
 `{blockableType}` est une clé arbitraire (ex. `articles`), résolue via `BlocksRegistrar` — jamais un nom de classe.
@@ -112,11 +112,11 @@ alt: Description de l'image
 # → { "id": 12, "type": "image", "position": 1, "url": "https://.../storage/blocks/images/xxxx.jpg", "alt": "Description de l'image" }
 
 # Mise à jour sans remplacer le fichier : omettre "file" conserve l'existant
-PUT /api/structuredContents/blocks/12
+POST /api/structuredContents/blocks/12
 { "alt": "Nouvelle description" }
 
 # Mise à jour en remplaçant le fichier : l'ancien est supprimé du disque
-PUT /api/structuredContents/blocks/12
+POST /api/structuredContents/blocks/12
 Content-Type: multipart/form-data
 file: <nouveau binaire>
 ```
