@@ -50,12 +50,15 @@ class ImageBlockType extends AbstractBlockType
 
         $disk = config('blocks.media_disk', 'public');
         $file = $request->file('file');
+        $dimensions = getimagesize($file->getPathname());
         $path = $file->store('blocks/images', $disk);
 
         return array_merge(Arr::except($validated, ['file']), [
             'disk' => $disk,
             'path' => $path,
             'mimeType' => $file->getClientMimeType(),
+            'width' => $dimensions[0],
+            'height' => $dimensions[1],
             'size' => $file->getSize(),
         ]);
     }
@@ -72,6 +75,8 @@ class ImageBlockType extends AbstractBlockType
         return [
             'url' => isset($data['path']) ? Storage::disk($data['disk'])->url($data['path']) : null,
             'alt' => $data['alt'] ?? null,
+            'width' => $data['width'] ?? null,
+            'height' => $data['height'] ?? null,
         ];
     }
 }
